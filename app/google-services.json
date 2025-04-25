@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "849531769547",
+    "project_id": "cram-mode-35529",
+    "storage_bucket": "cram-mode-35529.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:849531769547:android:b2a793ef52c03a12e9c14e",
+        "android_client_info": {
+          "package_name": "com.labactivity.crammode"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBryDmoYtVmT6WCVQqNguHD11TrTeO2vN0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
