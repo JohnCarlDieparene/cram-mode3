@@ -4,4 +4,14 @@
     <item name="passwordEditText" type="id" />
     <item name="registerButton" type="id" />
     <item name="loginButton" type="id" />
+    <item name="submitButton" type="id" />
+    <item name="previousButton" type="id" />
+    <item name="scoreText" type="id" />
+    <item name="optionD" type="id" />
+    <item name="optionC" type="id" />
+    <item name="optionB" type="id" />
+    <item name="optionA" type="id" />
+    <item name="answerOptions" type="id" />
+    <item name="questionText" type="id" />
+    <item name="backButton" type="id" />
 </resources>

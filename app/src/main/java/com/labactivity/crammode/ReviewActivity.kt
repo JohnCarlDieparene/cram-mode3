@@ -1,13 +1,11 @@
 package com.labactivity.crammode
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 
-class MainActivity : AppCompatActivity() {
+class ReviewActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        startActivity(Intent(this, LoginActivity::class.java))
-        finish() // So user can't go back to MainActivity with the back button
+        setContentView(R.layout.activity_review)
     }
 }
