@@ -12,7 +12,12 @@
           "package_name": "com.labactivity.crammode"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "849531769547-cg9mrpc30qi6uvq522rdbnm875o8og03.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyBryDmoYtVmT6WCVQqNguHD11TrTeO2vN0"
@@ -20,7 +25,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "849531769547-cg9mrpc30qi6uvq522rdbnm875o8og03.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:padding="16dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Spinner
+            android:id="@+id/selectionSpinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:entries="@array/create_options" />
+
+        <!-- Flashcard Section -->
+        <LinearLayout
+            android:id="@+id/flashcardLayout"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:paddingTop="16dp">
+
+            <EditText
+                android:id="@+id/questionInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Flashcard Question" />
+
+            <EditText
+                android:id="@+id/answerInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Flashcard Answer"
+                android:layout_marginTop="8dp" />
+
+            <Button
+                android:id="@+id/saveFlashcardButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Save Flashcard"
+                android:layout_marginTop="12dp" />
+        </LinearLayout>
+
+        <!-- Quiz Section -->
+        <LinearLayout
+            android:id="@+id/quizLayout"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:paddingTop="16dp">
+
+            <EditText
+                android:id="@+id/quizQuestionInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Quiz Question" />
+
+            <EditText
+                android:id="@+id/optionAInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Option A" />
+
+            <EditText
+                android:id="@+id/optionBInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Option B" />
+
+            <EditText
+                android:id="@+id/optionCInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Option C" />
+
+            <EditText
+                android:id="@+id/optionDInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Option D" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Select Correct Answer"
+                android:layout_marginTop="8dp"
+                android:textStyle="bold" />
+
+            <RadioGroup
+                android:id="@+id/correctAnswerRadioGroup"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <RadioButton
+                    android:id="@+id/radioA"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="A" />
+
+                <RadioButton
+                    android:id="@+id/radioB"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="B" />
+
+                <RadioButton
+                    android:id="@+id/radioC"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="C" />
+
+                <RadioButton
+                    android:id="@+id/radioD"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="D" />
+            </RadioGroup>
+
+            <Button
+                android:id="@+id/saveQuizButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Save Quiz"
+                android:layout_marginTop="12dp" />
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>

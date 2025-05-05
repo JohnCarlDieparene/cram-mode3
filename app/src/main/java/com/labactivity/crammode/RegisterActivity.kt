@@ -34,8 +34,20 @@ class RegisterActivity : AppCompatActivity() {
         registerButton.setOnClickListener {
             val email = emailEditText.text.toString()
             val password = passwordEditText.text.toString()
+
+            if (!email.matches(Regex("^[A-Za-z0-9._%+-]+@email\\.com$"))) {
+                emailEditText.error = "Email must end with @email.com"
+                return@setOnClickListener
+            }
+
+            if (password.length < 6) {
+                passwordEditText.error = "Password must be at least 6 characters"
+                return@setOnClickListener
+            }
+
             registerUser(email, password)
         }
+
     }
 
     private fun registerUser(email: String, password: String) {

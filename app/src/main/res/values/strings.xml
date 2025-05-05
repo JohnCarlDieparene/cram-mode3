@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">CramMode</string>
+    <string-array name="create_options">
+        <item>Flashcard</item>
+        <item>Quiz</item>
+    </string-array>
+    <string name="default_web_client_id">849531769547-cg9mrpc30qi6uvq522rdbnm875o8og03.apps.googleusercontent.com</string>
+
 </resources>

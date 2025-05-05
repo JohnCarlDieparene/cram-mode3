@@ -1,194 +1,178 @@
 package com.labactivity.crammode
 
+import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.view.View
 import android.widget.*
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.firestore.FirebaseFirestore
+
 class QuizActivity : AppCompatActivity() {
 
-    private lateinit var questionText: TextView
-    private lateinit var answerOptions: RadioGroup
-    private lateinit var submitButton: Button
-    private lateinit var scoreText: TextView
+    private lateinit var questionTextView: TextView
+    private lateinit var optionARadio: RadioButton
+    private lateinit var optionBRadio: RadioButton
+    private lateinit var optionCRadio: RadioButton
+    private lateinit var optionDRadio: RadioButton
+    private lateinit var radioGroup: RadioGroup
     private lateinit var nextButton: Button
-    private lateinit var quizOverLayout: View
-    private lateinit var quizOverText: TextView
-    private lateinit var finalScoreText: TextView
-    private lateinit var returnButton: Button
-    private lateinit var backButton: ImageButton
+    private lateinit var submitButton: Button
     private lateinit var questionCounterText: TextView
-    private lateinit var timerTextView: TextView // Timer TextView
+    private lateinit var scoreText: TextView
+    private lateinit var timerTextView: TextView
 
+    private val db = FirebaseFirestore.getInstance()
+    private var quizList: MutableList<Map<String, String>> = mutableListOf()
     private var currentQuestionIndex = 0
     private var score = 0
-    private val questions = mutableListOf<Question>()
+
     private var countDownTimer: CountDownTimer? = null
-    private var timeLeftInMillis: Long = 30000 // 30 seconds for each question
-    private var isQuizOver = false // Track if the quiz is over
+    private val timePerQuestion: Long = 30_000L // 30 seconds in ms
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_quiz)
 
-        // Initialize the views
-        questionText = findViewById(R.id.questionText)
-        answerOptions = findViewById(R.id.answerOptions)
-        submitButton = findViewById(R.id.submitButton)
-        scoreText = findViewById(R.id.scoreText)
+        // Initialize UI components
+        questionTextView = findViewById(R.id.questionTextView)
+        optionARadio = findViewById(R.id.optionARadio)
+        optionBRadio = findViewById(R.id.optionBRadio)
+        optionCRadio = findViewById(R.id.optionCRadio)
+        optionDRadio = findViewById(R.id.optionDRadio)
+        radioGroup = findViewById(R.id.optionsRadioGroup)
         nextButton = findViewById(R.id.nextButton)
-        quizOverLayout = findViewById(R.id.quizOverLayout)
-        quizOverText = findViewById(R.id.quizOverText)
-        finalScoreText = findViewById(R.id.finalScoreText)
-        returnButton = findViewById(R.id.returnButton)
-        backButton = findViewById(R.id.backButton)
+        submitButton = findViewById(R.id.submitButton)
         questionCounterText = findViewById(R.id.questionCounterText)
+        scoreText = findViewById(R.id.scoreText)
         timerTextView = findViewById(R.id.timerTextView)
 
-        // Set initial visibility
-        quizOverLayout.visibility = View.GONE
-        returnButton.visibility = View.GONE
-
-        // Load questions from Firebase
-        loadQuestionsFromFirebase()
+        fetchQuizzes()
 
         submitButton.setOnClickListener {
-            val selectedRadioButtonId = answerOptions.checkedRadioButtonId
-            if (selectedRadioButtonId != -1) {
-                val selectedRadioButton = findViewById<RadioButton>(selectedRadioButtonId)
-                checkAnswer(selectedRadioButton.text.toString())
-            } else {
-                Toast.makeText(this, "Please select an answer.", Toast.LENGTH_SHORT).show()
+            if (radioGroup.checkedRadioButtonId == -1) {
+                Toast.makeText(this, "Please select an answer", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
             }
+
+            val selectedOption = findViewById<RadioButton>(radioGroup.checkedRadioButtonId).text.toString()
+            val correctAnswer = quizList[currentQuestionIndex]["correctAnswer"]
+
+            if (selectedOption.equals(correctAnswer, ignoreCase = true)) {
+                score++
+            }
+
+            countDownTimer?.cancel()
+
+            submitButton.visibility = View.GONE
+            nextButton.visibility = View.VISIBLE
         }
 
         nextButton.setOnClickListener {
+            countDownTimer?.cancel()
             currentQuestionIndex++
-            if (currentQuestionIndex < questions.size) {
-                loadQuestion()
+
+            if (currentQuestionIndex < quizList.size) {
+                showQuestion()
+                nextButton.visibility = View.GONE
+                submitButton.visibility = View.VISIBLE
             } else {
-                showFinalScore()
+                showQuizOverPage()
             }
-            startTimer()
-        }
-
-        backButton.setOnClickListener {
-            onBackPressed()
-        }
-
-        returnButton.setOnClickListener {
-            finish()
         }
     }
 
-    private fun loadQuestionsFromFirebase() {
-        val db = FirebaseFirestore.getInstance()
+    private fun fetchQuizzes() {
         db.collection("quizzes")
             .get()
-            .addOnSuccessListener { result ->
-                for (document in result) {
-                    val questionText = document.getString("question") ?: ""
-                    val options = document.get("options") as? List<String> ?: emptyList()
-                    val correctAnswer = document.getString("correctAnswer") ?: ""
-                    if (questionText.isNotEmpty() && options.isNotEmpty() && correctAnswer.isNotEmpty()) {
-                        questions.add(Question(questionText, options, correctAnswer))
-                    }
+            .addOnSuccessListener { documents ->
+                for (doc in documents) {
+                    val quiz = mapOf(
+                        "question" to (doc.getString("question") ?: ""),
+                        "optionA" to (doc.getString("optionA") ?: ""),
+                        "optionB" to (doc.getString("optionB") ?: ""),
+                        "optionC" to (doc.getString("optionC") ?: ""),
+                        "optionD" to (doc.getString("optionD") ?: ""),
+                        "correctAnswer" to (doc.getString("correctAnswer") ?: "")
+                    )
+                    quizList.add(quiz)
                 }
-                if (questions.isNotEmpty()) {
-                    loadQuestion()
+
+                if (quizList.isNotEmpty()) {
+                    showQuestion()
                 } else {
-                    Toast.makeText(this, "No quiz data available.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "No quizzes found", Toast.LENGTH_SHORT).show()
+                    finish()
                 }
             }
-            .addOnFailureListener { exception ->
-                Toast.makeText(this, "Failed to load quiz.", Toast.LENGTH_SHORT).show()
+            .addOnFailureListener {
+                Toast.makeText(this, "Failed to load quizzes", Toast.LENGTH_SHORT).show()
             }
     }
 
-    private fun loadQuestion() {
-        val question = questions[currentQuestionIndex]
-        questionText.text = question.questionText
+    private fun showQuestion() {
+        val quiz = quizList[currentQuestionIndex]
+        questionTextView.text = quiz["question"]
+        optionARadio.text = quiz["optionA"]
+        optionBRadio.text = quiz["optionB"]
+        optionCRadio.text = quiz["optionC"]
+        optionDRadio.text = quiz["optionD"]
+        radioGroup.clearCheck()
 
-        answerOptions.removeAllViews()
-        for (answer in question.answers) {
-            val radioButton = RadioButton(this)
-            radioButton.text = answer
-            radioButton.textSize = 16f
-            answerOptions.addView(radioButton)
-        }
-        questionCounterText.text = "Question ${currentQuestionIndex + 1} of ${questions.size}"
+        questionCounterText.text = "Question ${currentQuestionIndex + 1} of ${quizList.size}"
+        scoreText.text = "Score: $score"
 
-        // Cancel the previous timer if it's running, and reset time
-        countDownTimer?.cancel()
-        timeLeftInMillis = 30000 // Reset to 30 seconds
         startTimer()
-
-        submitButton.visibility = View.VISIBLE
-        nextButton.visibility = View.GONE
     }
 
     private fun startTimer() {
-        // Start a new countdown timer if the activity is still active
-        if (!isQuizOver && !isFinishing) {
-            countDownTimer = object : CountDownTimer(timeLeftInMillis, 1000) {
-                override fun onTick(millisUntilFinished: Long) {
-                    timeLeftInMillis = millisUntilFinished
-                    updateTimerUI()
-                }
-
-                override fun onFinish() {
-                    timeLeftInMillis = 0
-                    updateTimerUI()
-                    if (!isQuizOver) {
-                        Toast.makeText(this@QuizActivity, "Time's up!", Toast.LENGTH_SHORT).show()
-                        checkAnswer("") // Automatically submit the answer if time runs out
-                    }
-                }
-            }.start()
-        }
-    }
-
-    private fun updateTimerUI() {
-        val secondsLeft = (timeLeftInMillis / 1000).toInt()
-        timerTextView.text = "Time remaining: $secondsLeft sec"
-    }
-
-    private fun checkAnswer(selectedAnswer: String) {
-        val correctAnswer = questions[currentQuestionIndex].correctAnswer
-        if (selectedAnswer == correctAnswer) {
-            score++
-        }
-        scoreText.text = "Score: $score"
-        submitButton.visibility = View.GONE
-        nextButton.visibility = View.VISIBLE
-    }
-
-    private fun showFinalScore() {
-        // Stop the timer and hide the timer UI
         countDownTimer?.cancel()
-        timerTextView.visibility = View.GONE // Hide the timer
 
-        questionText.visibility = View.GONE
-        answerOptions.visibility = View.GONE
-        submitButton.visibility = View.GONE
-        nextButton.visibility = View.GONE
-        scoreText.visibility = View.GONE
-        backButton.visibility = View.GONE
+        countDownTimer = object : CountDownTimer(timePerQuestion, 1000) {
+            override fun onTick(millisUntilFinished: Long) {
+                val secondsLeft = millisUntilFinished / 1000
+                timerTextView.text = "Time remaining: $secondsLeft sec"
 
-        quizOverLayout.visibility = View.VISIBLE
-        finalScoreText.text = "Final Score: $score"
-        returnButton.visibility = View.VISIBLE
+                // Change text color if time is less than or equal to 10 seconds
+                if (secondsLeft <= 10) {
+                    timerTextView.setTextColor(Color.RED)
+                } else {
+                    timerTextView.setTextColor(Color.BLACK)
+                }
+            }
 
-        isQuizOver = true // Set quiz over flag to true to prevent further Toasts
+            override fun onFinish() {
+                timerTextView.text = "Time's up!"
+                timerTextView.setTextColor(Color.RED)
+
+                if (currentQuestionIndex < quizList.size - 1) {
+                    currentQuestionIndex++
+                    showQuestion()
+                    nextButton.visibility = View.GONE
+                    submitButton.visibility = View.VISIBLE
+                } else {
+                    showQuizOverPage()
+                }
+            }
+        }.start()
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        // Cancel timer to avoid memory leaks
+    private fun showQuizOverPage() {
         countDownTimer?.cancel()
-    }
 
-    data class Question(val questionText: String, val answers: List<String>, val correctAnswer: String)
+        val scoreMessage = "Quiz Complete! Your Score: $score/${quizList.size}"
+        val scoreDialog = AlertDialog.Builder(this)
+            .setTitle("Quiz Over")
+            .setMessage(scoreMessage)
+            .setPositiveButton("Go Back to Dashboard") { _, _ ->
+                val intent = Intent(this, DashboardActivity::class.java)
+                startActivity(intent)
+                finish()
+            }
+            .create()
+
+        scoreDialog.show()
+    }
 }
-
