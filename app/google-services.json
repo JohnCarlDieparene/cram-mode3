@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "849531769547-5tltk3q8tnecb2crngmp926scui9fckn.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.labactivity.crammode",
+            "certificate_hash": "2116b6ac7a03796332e49b4b857cf772a06df82d"
+          }
+        },
+        {
           "client_id": "849531769547-cg9mrpc30qi6uvq522rdbnm875o8og03.apps.googleusercontent.com",
           "client_type": 3
         }

@@ -3,6 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.labactivity.crammode">
 
+    <uses-permission android:name="android.permission.INTERNET"/>
+
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -13,6 +16,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CramMode"
         tools:targetApi="31">
+
+
 
         <activity android:name=".DashboardActivity" />
         <activity android:name=".ReviewActivity" />

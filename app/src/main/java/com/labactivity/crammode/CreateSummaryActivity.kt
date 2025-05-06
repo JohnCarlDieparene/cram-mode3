@@ -40,7 +40,7 @@ class CreateSummaryActivity : AppCompatActivity() {
             saveSummaryToFirebase()
             val intent = Intent(this, DisplaySummariesActivity::class.java)
             startActivity(intent)
-             // Optional: close CreateSummaryActivity after saving
+             //
         }
 
 
