@@ -8,6 +8,7 @@ import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
 class QuizActivity : AppCompatActivity() {
@@ -25,6 +26,8 @@ class QuizActivity : AppCompatActivity() {
     private lateinit var timerTextView: TextView
 
     private val db = FirebaseFirestore.getInstance()
+    private val auth = FirebaseAuth.getInstance()
+
     private var quizList: MutableList<Map<String, String>> = mutableListOf()
     private var currentQuestionIndex = 0
     private var score = 0
@@ -85,7 +88,13 @@ class QuizActivity : AppCompatActivity() {
     }
 
     private fun fetchQuizzes() {
-        db.collection("quizzes")
+        val userId = auth.currentUser?.uid
+        if (userId == null) {
+            Toast.makeText(this, "User not logged in", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        db.collection("users").document(userId).collection("quizzes")
             .get()
             .addOnSuccessListener { documents ->
                 for (doc in documents) {

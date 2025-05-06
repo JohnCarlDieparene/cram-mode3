@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
 class CreateActivity : AppCompatActivity() {
@@ -31,6 +32,7 @@ class CreateActivity : AppCompatActivity() {
     private lateinit var saveQuizButton: Button
 
     private val db = FirebaseFirestore.getInstance()
+    private val auth = FirebaseAuth.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,6 +74,12 @@ class CreateActivity : AppCompatActivity() {
 
         // Save flashcard
         saveFlashcardButton.setOnClickListener {
+            val userId = auth.currentUser?.uid
+            if (userId == null) {
+                Toast.makeText(this, "User not logged in", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
             val question = questionInput.text.toString().trim()
             val answer = answerInput.text.toString().trim()
 
@@ -85,7 +93,9 @@ class CreateActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            db.collection("flashcards")
+            val userFlashcardsRef = db.collection("users").document(userId).collection("flashcards")
+
+            userFlashcardsRef
                 .whereEqualTo("question", question)
                 .get()
                 .addOnSuccessListener { documents ->
@@ -93,7 +103,7 @@ class CreateActivity : AppCompatActivity() {
                         Toast.makeText(this, "This flashcard already exists", Toast.LENGTH_SHORT).show()
                     } else {
                         val flashcard = hashMapOf("question" to question, "answer" to answer)
-                        db.collection("flashcards")
+                        userFlashcardsRef
                             .add(flashcard)
                             .addOnSuccessListener {
                                 Toast.makeText(this, "Flashcard saved!", Toast.LENGTH_SHORT).show()
@@ -112,6 +122,12 @@ class CreateActivity : AppCompatActivity() {
 
         // Save quiz
         saveQuizButton.setOnClickListener {
+            val userId = auth.currentUser?.uid
+            if (userId == null) {
+                Toast.makeText(this, "User not logged in", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
             val question = quizQuestionInput.text.toString().trim()
             val optionA = optionAInput.text.toString().trim()
             val optionB = optionBInput.text.toString().trim()
@@ -137,7 +153,9 @@ class CreateActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            db.collection("quizzes")
+            val userQuizzesRef = db.collection("users").document(userId).collection("quizzes")
+
+            userQuizzesRef
                 .whereEqualTo("question", question)
                 .get()
                 .addOnSuccessListener { documents ->
@@ -153,7 +171,7 @@ class CreateActivity : AppCompatActivity() {
                             "correctAnswer" to correctAnswer
                         )
 
-                        db.collection("quizzes")
+                        userQuizzesRef
                             .add(quiz)
                             .addOnSuccessListener {
                                 Toast.makeText(this, "Quiz saved!", Toast.LENGTH_SHORT).show()

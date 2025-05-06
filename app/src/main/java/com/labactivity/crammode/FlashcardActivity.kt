@@ -6,11 +6,13 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
 class FlashcardActivity : AppCompatActivity() {
 
     private val db = FirebaseFirestore.getInstance()
+    private val auth = FirebaseAuth.getInstance()
     private lateinit var flashcardsList: MutableList<Map<String, String>>
     private lateinit var questionTextView: TextView
     private lateinit var answerTextView: TextView
@@ -60,7 +62,13 @@ class FlashcardActivity : AppCompatActivity() {
     }
 
     private fun fetchFlashcards() {
-        db.collection("flashcards")
+        val userId = auth.currentUser?.uid
+        if (userId == null) {
+            Toast.makeText(this, "User not logged in", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        db.collection("users").document(userId).collection("flashcards")
             .get()
             .addOnSuccessListener { result ->
                 flashcardsList.clear()
