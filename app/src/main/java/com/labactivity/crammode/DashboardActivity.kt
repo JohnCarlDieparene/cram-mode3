@@ -30,6 +30,13 @@ class DashboardActivity : AppCompatActivity() {
         val flashcardButton = findViewById<Button>(R.id.flashcardButton)
         val quizButton: Button = findViewById(R.id.quizButton)
         val createButton = findViewById<Button>(R.id.createButton)
+        val smartSummaryBtn = findViewById<Button>(R.id.btnSmartSummary)
+
+        smartSummaryBtn.setOnClickListener {
+            val intent = Intent(this, CreateSummaryActivity::class.java)
+            startActivity(intent)
+        }
+
 
         createButton.setOnClickListener {
             startActivity(Intent(this, CreateActivity::class.java))

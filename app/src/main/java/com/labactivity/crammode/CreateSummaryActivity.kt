@@ -1,13 +1,13 @@
 package com.labactivity.crammode
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.FirebaseDatabase
-import com.labactivity.crammode.com.labactivity.crammode.Summary
+import com.google.firebase.firestore.FirebaseFirestore
 
 class CreateSummaryActivity : AppCompatActivity() {
 
@@ -16,6 +16,7 @@ class CreateSummaryActivity : AppCompatActivity() {
     private lateinit var importantDatesInput: EditText
     private lateinit var summaryInput: EditText
     private lateinit var saveButton: Button
+    private lateinit var db: FirebaseFirestore
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,10 +27,24 @@ class CreateSummaryActivity : AppCompatActivity() {
         importantDatesInput = findViewById(R.id.importantDatesInput)
         summaryInput = findViewById(R.id.summaryInput)
         saveButton = findViewById(R.id.saveSummaryButton)
+        db = FirebaseFirestore.getInstance()
+
+        val viewSummariesButton = findViewById<Button>(R.id.viewSummariesButton)
+
+        viewSummariesButton.setOnClickListener {
+            val intent = Intent(this, DisplaySummariesActivity::class.java)
+            startActivity(intent)
+        }
 
         saveButton.setOnClickListener {
             saveSummaryToFirebase()
+            val intent = Intent(this, DisplaySummariesActivity::class.java)
+            startActivity(intent)
+             // Optional: close CreateSummaryActivity after saving
         }
+
+
+
     }
 
     private fun saveSummaryToFirebase() {
@@ -44,15 +59,20 @@ class CreateSummaryActivity : AppCompatActivity() {
         }
 
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+
+        // Save summary in Firestore under the user's UID
         val summary = Summary(topic, keyTerms, importantDates, summaryText)
-
-        val ref = FirebaseDatabase.getInstance().getReference("summaries").child(userId).child(topic)
-
-        ref.setValue(summary).addOnSuccessListener {
-            Toast.makeText(this, "Summary saved!", Toast.LENGTH_SHORT).show()
-            finish() // Optional: go back after saving
-        }.addOnFailureListener {
-            Toast.makeText(this, "Failed to save summary.", Toast.LENGTH_SHORT).show()
-        }
+        db.collection("summaries")
+            .document(userId)
+            .collection("user_summaries")
+            .document(topic)  // You can use topic as document ID
+            .set(summary)
+            .addOnSuccessListener {
+                Toast.makeText(this, "Summary saved!", Toast.LENGTH_SHORT).show()
+                 // Optionally close the activity after saving
+            }
+            .addOnFailureListener {
+                Toast.makeText(this, "Failed to save summary.", Toast.LENGTH_SHORT).show()
+            }
     }
 }

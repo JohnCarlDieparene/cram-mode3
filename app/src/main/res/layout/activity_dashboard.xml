@@ -49,6 +49,14 @@
         android:layout_marginBottom="16dp" />
         />
 
+    <Button
+        android:id="@+id/btnSmartSummary"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Create Smart Summary"
+        android:layout_marginBottom="16dp" />
+
+
 
     <Button
         android:id="@+id/flashcardButton"
