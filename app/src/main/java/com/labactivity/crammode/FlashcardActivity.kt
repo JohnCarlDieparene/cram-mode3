@@ -1,8 +1,10 @@
 package com.labactivity.crammode
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -25,6 +27,13 @@ class FlashcardActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_flashcard)
+
+        val imageDash2 = findViewById<ImageView>(R.id.imageDash2)
+
+        imageDash2.setOnClickListener {
+            val intent = Intent(this, DashboardActivity::class.java)
+            startActivity(intent)
+        }
 
         // Initialize views
         questionTextView = findViewById(R.id.questionTextView)

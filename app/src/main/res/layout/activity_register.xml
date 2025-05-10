@@ -121,6 +121,7 @@
         android:text="Register"
         app:backgroundTint="#020202"
         app:cornerRadius="20dp"
+        android:stateListAnimator="@animator/raise_on_press"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
