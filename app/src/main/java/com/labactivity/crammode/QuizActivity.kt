@@ -39,6 +39,13 @@ class QuizActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_quiz)
 
+        val imageDash3 = findViewById<ImageView>(R.id.imageDash3)
+
+        imageDash3.setOnClickListener {
+            val intent = Intent(this, DashboardActivity::class.java)
+            startActivity(intent)
+        }
+
         // Initialize UI components
         questionTextView = findViewById(R.id.questionTextView)
         optionARadio = findViewById(R.id.optionARadio)

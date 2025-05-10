@@ -1,5 +1,6 @@
 package com.labactivity.crammode
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.*
@@ -37,6 +38,13 @@ class CreateActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create)
+
+        val imageDash4 = findViewById<ImageView>(R.id.imageDash4)
+
+        imageDash4.setOnClickListener {
+            val intent = Intent(this, DashboardActivity::class.java)
+            startActivity(intent)
+        }
 
         // Spinner and Layouts
         selectionSpinner = findViewById(R.id.selectionSpinner)
