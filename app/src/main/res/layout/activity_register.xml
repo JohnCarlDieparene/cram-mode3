@@ -11,8 +11,8 @@
 
     <FrameLayout
         android:id="@+id/customCard"
-        android:layout_width="408dp"
-        android:layout_height="604dp"
+        android:layout_width="413dp"
+        android:layout_height="600dp"
         android:background="@drawable/top_left_radius"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

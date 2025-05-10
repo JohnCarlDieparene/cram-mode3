@@ -3,6 +3,7 @@ package com.labactivity.crammode
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -20,25 +21,23 @@ class DashboardActivity : AppCompatActivity() {
         auth = FirebaseAuth.getInstance()
 
         val welcomeText = findViewById<TextView>(R.id.welcomeText)
-        val startReviewButton = findViewById<Button>(R.id.startReviewButton)
         val logoutButton = findViewById<Button>(R.id.logoutButton)
 
         val user = auth.currentUser
         welcomeText.text = "Welcome, ${user?.email}"
 
-        val reviewButton = findViewById<Button>(R.id.startReviewButton)
+        val imageReview = findViewById<ImageView>(R.id.imageReview)
         val flashcardButton = findViewById<Button>(R.id.flashcardButton)
         val quizButton: Button = findViewById(R.id.quizButton)
-        val createButton = findViewById<Button>(R.id.createButton)
-        val smartSummaryBtn = findViewById<Button>(R.id.btnSmartSummary)
+        val imageFlashQuiz = findViewById<ImageView>(R.id.imageFlashQuiz)
+        val imageSummary = findViewById<ImageView>(R.id.imageSummary)
 
-        smartSummaryBtn.setOnClickListener {
+        imageSummary.setOnClickListener {
             val intent = Intent(this, CreateSummaryActivity::class.java)
             startActivity(intent)
         }
 
-
-        createButton.setOnClickListener {
+        imageFlashQuiz.setOnClickListener {
             startActivity(Intent(this, CreateActivity::class.java))
         }
 
@@ -50,11 +49,7 @@ class DashboardActivity : AppCompatActivity() {
             startActivity(Intent(this, FlashcardActivity::class.java))
         }
 
-        reviewButton.setOnClickListener {
-            startActivity(Intent(this, ReviewActivity::class.java))
-        }
-
-        startReviewButton.setOnClickListener {
+        imageReview.setOnClickListener {
             Toast.makeText(this, "Start reviewing coming soon!", Toast.LENGTH_SHORT).show()
         }
 
