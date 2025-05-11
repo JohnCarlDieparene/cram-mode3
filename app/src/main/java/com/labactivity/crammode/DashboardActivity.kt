@@ -57,7 +57,8 @@ class DashboardActivity : AppCompatActivity() {
         }
 
         imageReview.setOnClickListener {
-            Toast.makeText(this, "Start reviewing coming soon!", Toast.LENGTH_SHORT).show()
+            val intent = Intent(this, DisplaySummariesActivity::class.java)
+            startActivity(intent)
         }
 
         logoutButton.setOnClickListener {
