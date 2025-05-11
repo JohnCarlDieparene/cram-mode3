@@ -18,6 +18,7 @@ class DashboardActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_dashboard)
 
+
         auth = FirebaseAuth.getInstance()
 
         val welcomeText = findViewById<TextView>(R.id.welcomeText)
@@ -31,6 +32,12 @@ class DashboardActivity : AppCompatActivity() {
         val quizButton: Button = findViewById(R.id.quizButton)
         val imageFlashQuiz = findViewById<ImageView>(R.id.imageFlashQuiz)
         val imageSummary = findViewById<ImageView>(R.id.imageSummary)
+        val imageDash1 = findViewById<ImageView>(R.id.imageDash1)
+
+        imageDash1.setOnClickListener {
+            val intent = Intent(this, DashboardActivity::class.java)
+            startActivity(intent)
+        }
 
         imageSummary.setOnClickListener {
             val intent = Intent(this, CreateSummaryActivity::class.java)

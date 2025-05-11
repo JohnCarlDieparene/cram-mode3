@@ -20,6 +20,7 @@ class SummaryAdapter(options: FirestoreRecyclerOptions<Summary>) :
     FirestoreRecyclerAdapter<Summary, SummaryAdapter.SummaryViewHolder>(options) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SummaryViewHolder {
+
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_summary, parent, false)  // item_summary.xml is the item layout
         return SummaryViewHolder(view)

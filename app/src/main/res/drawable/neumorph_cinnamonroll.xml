@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:right="3dp" android:bottom="3dp">
+        <shape android:shape="rectangle">
+            <solid android:color="#C5ECF4" /> <!-- shadow: soft sky blue -->
+            <corners android:radius="16dp" />
+        </shape>
+    </item>
+    <item android:left="2dp" android:top="2dp">
+        <shape android:shape="rectangle">
+            <solid android:color="#FFFFFF" /> <!-- light highlight -->
+            <corners android:radius="16dp" />
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="#FFFDF9" /> <!-- creamy white card -->
+            <corners android:radius="16dp" />
+        </shape>
+    </item>
+</layer-list>

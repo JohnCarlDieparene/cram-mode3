@@ -11,13 +11,15 @@
 
     <FrameLayout
         android:id="@+id/customCard"
-        android:layout_width="413dp"
-        android:layout_height="600dp"
+        android:layout_width="0dp"
+        android:layout_height="540dp"
         android:background="@drawable/top_left_radius"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cardView"
+        app:layout_constraintVertical_bias="1.0" />
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cardView"
@@ -44,7 +46,6 @@
         android:layout_width="315dp"
         android:layout_height="90dp"
         android:layout_marginStart="50dp"
-        android:layout_marginTop="168dp"
         android:layout_marginEnd="50dp"
         android:fontFamily="@font/poppins_black"
         android:lineSpacingExtra="-10sp"
@@ -56,14 +57,14 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/cardView"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintTop_toTopOf="@+id/customCard"
+        app:layout_constraintVertical_bias="0.13000000" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/emailLayout"
         android:layout_width="250dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="24dp"
         android:hint="Email"
         app:boxBackgroundMode="outline"
         app:boxCornerRadiusBottomEnd="20dp"
@@ -118,10 +119,12 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="36dp"
         android:fontFamily="@font/poppins"
+        android:stateListAnimator="@animator/raise_on_press"
         android:text="Register"
+        android:translationZ="4dp"
         app:backgroundTint="#020202"
         app:cornerRadius="20dp"
-        android:stateListAnimator="@animator/raise_on_press"
+        app:elevation="2dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
@@ -133,7 +136,7 @@
         android:id="@+id/loginRedirectTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="10dp"
         android:fontFamily="@font/poppins_bold"
         android:text="Already have an account? Login"
         android:textColor="#7C7C90"

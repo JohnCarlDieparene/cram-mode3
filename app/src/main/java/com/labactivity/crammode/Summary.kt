@@ -4,5 +4,6 @@ data class Summary(
     val topic: String = "",
     val keyTerms: String = "",
     val importantDates: String = "",
-    val summaryText: String = ""
+    val summaryText: String = "",
+
 )
