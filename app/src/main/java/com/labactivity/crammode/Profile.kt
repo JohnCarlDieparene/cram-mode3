@@ -5,73 +5,38 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
 
-class DashboardActivity : AppCompatActivity() {
+class Profile : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_dashboard)
+        setContentView(R.layout.activity_profile)
 
-        auth = FirebaseAuth.getInstance()
-
-        val welcomeText = findViewById<TextView>(R.id.welcomeText)
+        // Link the views using findViewById
+        val imageDash6 = findViewById<ImageView>(R.id.imageDash6)
+        val imageUser6 = findViewById<ImageView>(R.id.imageUser6)
         val logoutButton = findViewById<Button>(R.id.logoutButton)
 
-        val user = auth.currentUser
-        welcomeText.text = "Welcome, ${user?.email}"
-
-        val imageReview = findViewById<ImageView>(R.id.imageReview)
-        val flashcardButton = findViewById<Button>(R.id.flashcardButton)
-        val quizButton: Button = findViewById(R.id.quizButton)
-        val imageFlashQuiz = findViewById<ImageView>(R.id.imageFlashQuiz)
-        val imageSummary = findViewById<ImageView>(R.id.imageSummary)
-        val imageDash1 = findViewById<ImageView>(R.id.imageDash1)
-        val imageUser1 = findViewById<ImageView>(R.id.imageUser1)
-
-
-        imageDash1.setOnClickListener {
+        imageDash6.setOnClickListener {
             val intent = Intent(this, DashboardActivity::class.java)
             startActivity(intent)
         }
 
-        imageUser1.setOnClickListener {
+        imageUser6.setOnClickListener {
             val intent = Intent(this, Profile::class.java)
-            startActivity(intent)
-        }
-
-        imageSummary.setOnClickListener {
-            val intent = Intent(this, CreateSummaryActivity::class.java)
-            startActivity(intent)
-        }
-
-        imageFlashQuiz.setOnClickListener {
-            startActivity(Intent(this, CreateActivity::class.java))
-        }
-
-        quizButton.setOnClickListener {
-            startActivity(Intent(this, Quizzes::class.java))
-        }
-
-        flashcardButton.setOnClickListener {
-            startActivity(Intent(this, Flashcards::class.java))
-        }
-
-        imageReview.setOnClickListener {
-            val intent = Intent(this, DisplaySummariesActivity::class.java)
             startActivity(intent)
         }
 
         logoutButton.setOnClickListener {
             signOut()
         }
-    }
 
+    }
     private fun signOut() {
         // Sign out from Firebase
         auth.signOut()

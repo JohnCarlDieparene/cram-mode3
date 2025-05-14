@@ -111,7 +111,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/passwordLayout"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintVertical_bias="0.0" />
 
 
     <TextView
@@ -157,9 +157,9 @@
         android:layout_height="50dp"
         android:elevation="2dp"
         android:fontFamily="@font/poppins"
+        android:stateListAnimator="@animator/raise_on_press"
         android:text="Sign in with Google"
         android:textColor="?attr/colorOnSurfaceVariant"
-        android:stateListAnimator="@animator/raise_on_press"
         app:backgroundTint="#FFFFFF"
         app:cornerRadius="20dp"
         app:layout_constraintBottom_toBottomOf="parent"

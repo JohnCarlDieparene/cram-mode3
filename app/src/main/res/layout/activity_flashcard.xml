@@ -4,14 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#b6eb79">
+    android:background="#A7CBF1">
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cardView"
         android:layout_width="308dp"
         android:layout_height="170dp"
         android:layout_marginBottom="-270dp"
-        app:cardBackgroundColor="#fffce2"
+        app:cardBackgroundColor="#FFFDF9 "
         app:cardCornerRadius="16dp"
         app:cardElevation="12dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -23,7 +23,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:gravity="center_horizontal"
             android:orientation="vertical"
             android:padding="16dp">
@@ -46,7 +46,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:paddingTop="16dp"
+                android:paddingTop="14dp"
                 android:text="Answer"
                 android:textAlignment="center"
                 android:textColor="#777777"
@@ -61,7 +61,7 @@
         android:layout_width="308dp"
         android:layout_height="49dp"
         android:layout_marginTop="20dp"
-        android:backgroundTint="#A8D80D"
+        android:backgroundTint="#D7E9FE"
         android:elevation="6dp"
         android:fontFamily="@font/poppins_bold"
         android:stateListAnimator="@animator/raise_on_press"
@@ -139,13 +139,14 @@
 
     <LinearLayout
         android:id="@+id/bottomNav"
-        android:layout_width="409dp"
+        android:layout_width="0dp"
         android:layout_height="80dp"
-        android:background="#fffce2"
+        android:background="#FFFDF9 "
         android:gravity="center"
         android:orientation="horizontal"
         android:paddingStart="0dp"
         android:paddingEnd="0dp"
+        android:paddingBottom="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -153,23 +154,23 @@
 
         <ImageView
             android:id="@+id/imageDash2"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
             android:layout_marginEnd="40dp"
             android:src="@drawable/dashboard_icon" />
-
-        <ImageView
-            android:id="@+id/imageUser2"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_marginEnd="40dp"
-            android:src="@drawable/user_icon" />
 
         <ImageView
             android:id="@+id/imageProg2"
             android:layout_width="50dp"
             android:layout_height="50dp"
+            android:layout_marginEnd="40dp"
             android:src="@drawable/progress_icon" />
+
+        <ImageView
+            android:id="@+id/imageUser2"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:src="@drawable/user_icon" />
     </LinearLayout>
 
 

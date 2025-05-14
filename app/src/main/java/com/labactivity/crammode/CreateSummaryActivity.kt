@@ -32,9 +32,15 @@ class CreateSummaryActivity : AppCompatActivity() {
 
         val viewSummariesButton = findViewById<Button>(R.id.viewSummariesButton)
         val imageDash5 = findViewById<ImageView>(R.id.imageDash5)
+        val imageUser5 = findViewById<ImageView>(R.id.imageUser5)
 
         imageDash5.setOnClickListener {
             val intent = Intent(this, DashboardActivity::class.java)
+            startActivity(intent)
+        }
+
+        imageUser5.setOnClickListener {
+            val intent = Intent(this, Profile::class.java)
             startActivity(intent)
         }
 

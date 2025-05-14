@@ -14,32 +14,31 @@
         android:paddingLeft="20dp"
         android:paddingTop="70dp"
         android:paddingRight="20dp"
-        android:paddingBottom="50dp">
+        android:paddingBottom="50dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            android:layout_marginBottom="16dp"
-            android:padding="16dp"
-            app:cardBackgroundColor="@android:color/transparent"
+            android:layout_margin="16dp"
+            android:padding="0dp"
             app:cardCornerRadius="28dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/bg_inner"
+                android:background="@color/white"
                 android:orientation="vertical"
                 android:padding="24dp">
 
-                <!-- Your EditTexts -->
                 <TextView
                     android:id="@+id/topicTextView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
                     android:layout_marginBottom="12dp"
-                    android:background="@android:color/transparent"
                     android:fontFamily="@font/poppins_bold"
                     android:text="Topic"
                     android:textColor="#999999"
@@ -50,7 +49,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="12dp"
-                    android:background="@android:color/transparent"
                     android:fontFamily="@font/poppins"
                     android:text="Key Terms"
                     android:textColor="#999999" />
@@ -60,7 +58,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="12dp"
-                    android:background="@android:color/transparent"
                     android:fontFamily="@font/poppins"
                     android:text="Important Dates"
                     android:textColor="#999999" />
@@ -69,14 +66,38 @@
                     android:id="@+id/summaryTextView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@android:color/transparent"
                     android:fontFamily="@font/poppins"
                     android:gravity="top"
                     android:minLines="4"
                     android:text="Summary"
                     android:textColor="#999999" />
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:gravity="end"
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:id="@+id/editButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:backgroundTint="#9EC6F0"
+                        android:text="Edit"
+                        android:textColor="@color/white" />
+
+                    <Button
+                        android:id="@+id/deleteButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:backgroundTint="#D7E9FE"
+                        android:text="Delete"
+                        android:textColor="#044389" />
+                </LinearLayout>
             </LinearLayout>
         </androidx.cardview.widget.CardView>
     </ScrollView>
+
 </LinearLayout>

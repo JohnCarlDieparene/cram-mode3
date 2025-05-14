@@ -29,9 +29,15 @@ class FlashcardActivity : AppCompatActivity() {
         setContentView(R.layout.activity_flashcard)
 
         val imageDash2 = findViewById<ImageView>(R.id.imageDash2)
+        val imageUser2 = findViewById<ImageView>(R.id.imageUser2)
 
         imageDash2.setOnClickListener {
             val intent = Intent(this, DashboardActivity::class.java)
+            startActivity(intent)
+        }
+
+        imageUser2.setOnClickListener {
+            val intent = Intent(this, Profile::class.java)
             startActivity(intent)
         }
 

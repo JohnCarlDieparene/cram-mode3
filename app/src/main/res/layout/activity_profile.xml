@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#A7CBF1"
+    android:padding="0dp"
+    android:paddingRight="10dp"
+    android:paddingBottom="10dp">
+
+    <!-- ScrollView for profile content -->
+
+    <!-- Bottom navigation bar (remains fixed) -->
+
+    <ScrollView
+        android:id="@+id/scrollViewProfile"
+        android:layout_width="0dp"
+        android:layout_height="600dp"
+        android:background="#A7CBF1"
+        android:paddingLeft="20dp"
+        android:paddingTop="20dp"
+        android:paddingRight="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.331">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:padding="30dp">
+
+            <ImageView
+                android:id="@+id/imageProfile6"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_marginTop="20dp"
+                android:contentDescription="Profile Picture"
+                android:scaleType="centerCrop"
+                android:src="@drawable/user_icon" />
+
+            <TextView
+                android:id="@+id/tvName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:gravity="center"
+                android:text="Name"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/Email"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:gravity="center"
+                android:text="Email"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/tvCourse"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:gravity="center"
+                android:text="Grade Level"
+                android:textSize="16sp" />
+
+        </LinearLayout>
+    </ScrollView>
+
+    <View
+        android:id="@+id/topShadow"
+        android:layout_width="0dp"
+        android:layout_height="11dp"
+        android:background="@drawable/top_shadow"
+        app:layout_constraintBottom_toTopOf="@id/bottomNav"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <LinearLayout
+        android:id="@+id/bottomNav"
+        android:layout_width="0dp"
+        android:layout_height="80dp"
+        android:background="#FFFDF9"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:paddingBottom="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <ImageView
+            android:id="@+id/imageDash6"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:layout_marginEnd="40dp"
+            android:src="@drawable/dashboard_icon" />
+
+        <ImageView
+            android:id="@+id/imageProg6"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginEnd="40dp"
+            android:src="@drawable/progress_icon" />
+
+        <ImageView
+            android:id="@+id/imageUser6"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:src="@drawable/user_icon" />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/logoutButton"
+        android:layout_width="111dp"
+        android:layout_height="44dp"
+        android:backgroundTint="#D7E9FE"
+        android:text="Logout"
+        android:textAllCaps="false"
+        android:textColor="#044389"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.857" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

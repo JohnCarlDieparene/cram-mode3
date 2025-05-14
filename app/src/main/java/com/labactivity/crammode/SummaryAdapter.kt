@@ -1,9 +1,14 @@
 package com.labactivity.crammode
 
+import android.content.Intent
+import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
@@ -43,5 +48,37 @@ class SummaryAdapter(options: FirestoreRecyclerOptions<Summary>) :
             importantDatesText.text = summary.importantDates
             summaryText.text = summary.summaryText
         }
+    }
+}
+class SummaryViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    private val topicText: TextView = itemView.findViewById(R.id.topicTextView)
+    private val keyTermsText: TextView = itemView.findViewById(R.id.keyTermsTextView)
+    private val importantDatesText: TextView = itemView.findViewById(R.id.importantDatesTextView)
+    private val summaryText: TextView = itemView.findViewById(R.id.summaryTextView)
+
+    private val editButton: Button = itemView.findViewById(R.id.editButton)
+    private val deleteButton: Button = itemView.findViewById(R.id.deleteButton)
+
+    fun bind(summary: Summary) {
+        topicText.text = summary.topic
+        keyTermsText.text = summary.keyTerms
+        importantDatesText.text = summary.importantDates
+        summaryText.text = summary.summaryText
+
+        editButton.setOnClickListener {
+            // Handle edit
+        }
+
+        deleteButton.setOnClickListener {
+            // Handle delete
+        }
+    }
+}
+class SummaryActivity : AppCompatActivity() {
+
+   override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.item_summary)
+
     }
 }

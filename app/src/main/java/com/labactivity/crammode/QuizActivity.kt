@@ -40,9 +40,15 @@ class QuizActivity : AppCompatActivity() {
         setContentView(R.layout.activity_quiz)
 
         val imageDash3 = findViewById<ImageView>(R.id.imageDash3)
+        val imageUser3 = findViewById<ImageView>(R.id.imageUser3)
 
         imageDash3.setOnClickListener {
             val intent = Intent(this, DashboardActivity::class.java)
+            startActivity(intent)
+        }
+
+        imageUser3.setOnClickListener {
+            val intent = Intent(this, Profile::class.java)
             startActivity(intent)
         }
 

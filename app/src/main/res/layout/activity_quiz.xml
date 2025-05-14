@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#C5ECF4"
+    android:background="#A7CBF1"
     android:paddingTop="50sp">
 
     <!-- Quiz Card -->
@@ -38,7 +38,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/poppins_bold"
                 android:text="Time left: 30s"
-                android:textColor="#A3A1C1"
+                android:textColor="#3E3E3E"
                 android:textSize="18sp" />
 
             <TextView
@@ -48,7 +48,7 @@
                 android:layout_marginTop="8dp"
                 android:fontFamily="sans-serif"
                 android:text="Question 1 of 5"
-                android:textColor="#A3A1C1"
+                android:textColor="#044389 "
                 android:textSize="16sp" />
 
             <TextView
@@ -58,7 +58,7 @@
                 android:layout_marginTop="16dp"
                 android:fontFamily="@font/poppins_bold"
                 android:text="Your question here?"
-                android:textColor="#444444"
+                android:textColor="#3E3E3E"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
@@ -118,22 +118,22 @@
                     android:layout_width="110dp"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="8dp"
-                    android:backgroundTint="#AEE6F9"
+                    android:backgroundTint="#9EC6F0"
+                    android:elevation="6dp"
                     android:fontFamily="@font/poppins_bold"
                     android:text="Submit"
-                    android:elevation="6dp"
-                    android:translationZ="2dp"
-                    android:textColor="#3E3E3E" />
+                    android:textSize="12sp"
+                    android:translationZ="2dp" />
 
                 <Button
                     android:id="@+id/nextButton"
                     android:layout_width="110dp"
                     android:layout_height="wrap_content"
-                    android:backgroundTint="#FFD6E8"
-                    android:text="Next"
+                    android:backgroundTint="#D7E9FE"
                     android:elevation="6dp"
+                    android:text="Next"
+                    android:textColor="#044389"
                     android:translationZ="2dp"
-                    android:textColor="#3E3E3E"
                     android:visibility="gone" />
             </LinearLayout>
 
@@ -144,7 +144,7 @@
                 android:layout_marginTop="12dp"
                 android:fontFamily="sans-serif-medium"
                 android:text="Score: 0"
-                android:textColor="#A3A1C1"
+                android:textColor="#3E3E3E"
                 android:textSize="16sp" />
         </LinearLayout>
     </androidx.cardview.widget.CardView>
@@ -212,15 +212,14 @@
 
     <LinearLayout
         android:id="@+id/bottomNav"
-        android:layout_width="409dp"
+        android:layout_width="0dp"
         android:layout_height="80dp"
-        android:layout_marginEnd="76dp"
-        android:layout_marginBottom="4dp"
         android:background="#FFFDF9"
         android:gravity="center"
         android:orientation="horizontal"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
+        android:paddingBottom="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -228,23 +227,23 @@
 
         <ImageView
             android:id="@+id/imageDash3"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
             android:layout_marginEnd="40dp"
             android:src="@drawable/dashboard_icon" />
-
-        <ImageView
-            android:id="@+id/imageUser3"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_marginEnd="40dp"
-            android:src="@drawable/user_icon" />
 
         <ImageView
             android:id="@+id/imageProg3"
             android:layout_width="50dp"
             android:layout_height="50dp"
+            android:layout_marginEnd="40dp"
             android:src="@drawable/progress_icon" />
+
+        <ImageView
+            android:id="@+id/imageUser3"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:src="@drawable/user_icon" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

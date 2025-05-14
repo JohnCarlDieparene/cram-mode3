@@ -20,12 +20,16 @@
 
 
         <activity android:name=".DashboardActivity" />
+        <activity android:name=".Profile" />
         <activity android:name=".ReviewActivity" />
         <activity android:name=".FlashcardActivity" />
         <activity android:name=".QuizActivity" />
         <activity android:name=".LoginActivity" />
         <activity android:name=".RegisterActivity" />
         <activity android:name=".CreateActivity" />
+        <activity android:name=".Flashcards" />
+        <activity android:name=".Quizzes" />
+        <activity android:name=".Summaries" />
         <activity android:name=".CreateSummaryActivity" />
         <activity android:name=".DisplaySummariesActivity" />
 

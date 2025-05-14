@@ -40,9 +40,15 @@ class CreateActivity : AppCompatActivity() {
         setContentView(R.layout.activity_create)
 
         val imageDash4 = findViewById<ImageView>(R.id.imageDash4)
+        val imageUser4 = findViewById<ImageView>(R.id.imageUser4)
 
         imageDash4.setOnClickListener {
             val intent = Intent(this, DashboardActivity::class.java)
+            startActivity(intent)
+        }
+
+        imageUser4.setOnClickListener {
+            val intent = Intent(this, Profile::class.java)
             startActivity(intent)
         }
 
