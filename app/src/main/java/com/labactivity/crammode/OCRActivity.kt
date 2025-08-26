@@ -33,6 +33,16 @@ import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.InputStream
 import com.labactivity.crammode.network.CohereClient
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
+import com.labactivity.crammode.model.StudyHistory
+import com.google.android.material.button.MaterialButton
+
+
+
+
+
 
 
 
@@ -43,7 +53,8 @@ class OCRActivity : AppCompatActivity() {
     private lateinit var btnTakePhoto: Button
     private lateinit var btnSummarize: Button
     private lateinit var btnClear: Button
-    private lateinit var btnCopy: Button
+    private lateinit var btnCopyOcr: Button
+    private lateinit var btnCopySummary: Button
 
     private lateinit var ocrResult: EditText
     private lateinit var txtSummary: TextView
@@ -92,7 +103,8 @@ class OCRActivity : AppCompatActivity() {
         btnTakePhoto = findViewById(R.id.btnTakePhoto)
         btnSummarize = findViewById(R.id.btnSummarize)
         btnClear = findViewById(R.id.btnClear)
-        btnCopy = findViewById(R.id.btnCopy)
+        btnCopyOcr = findViewById(R.id.btnCopyOcr)
+        btnCopySummary = findViewById(R.id.btnCopySummary)
         ocrResult = findViewById(R.id.ocrResult)
         txtSummary = findViewById(R.id.txtSummary)
         progressBar = findViewById(R.id.progressBar)
@@ -127,6 +139,11 @@ class OCRActivity : AppCompatActivity() {
 
 
 
+
+
+        findViewById<MaterialButton>(R.id.btnHistory).setOnClickListener {
+            startActivity(Intent(this, HistoryActivity::class.java))
+        }
 
 
 
@@ -202,6 +219,8 @@ class OCRActivity : AppCompatActivity() {
                     }
                 }
             }
+
+
 
         btnSelectFile.setOnClickListener {
             val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
@@ -332,12 +351,32 @@ class OCRActivity : AppCompatActivity() {
 
         }
 
-        btnCopy.setOnClickListener {
-            val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-            val clip = ClipData.newPlainText("summary", txtSummary.text.toString())
-            clipboard.setPrimaryClip(clip)
-            Toast.makeText(this, "Copied to clipboard", Toast.LENGTH_SHORT).show()
+        // Copy OCR Text
+        btnCopyOcr.setOnClickListener {
+            val ocrText = ocrResult.text.toString()
+            if (ocrText.isNotBlank()) {
+                val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                val clip = ClipData.newPlainText("OCR Text", ocrText)
+                clipboard.setPrimaryClip(clip)
+                Toast.makeText(this, "OCR text copied", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this, "No OCR text to copy", Toast.LENGTH_SHORT).show()
+            }
         }
+
+// Copy Summary Text
+        btnCopySummary.setOnClickListener {
+            val summaryText = txtSummary.text.toString()
+            if (summaryText.isNotBlank()) {
+                val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                val clip = ClipData.newPlainText("Summary Text", summaryText)
+                clipboard.setPrimaryClip(clip)
+                Toast.makeText(this, "Summary copied", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this, "No summary to copy", Toast.LENGTH_SHORT).show()
+            }
+        }
+
     }
 
     private fun uriToFile(uri: Uri): File {
@@ -452,7 +491,8 @@ class OCRActivity : AppCompatActivity() {
                 labelResult.visibility = View.VISIBLE
                 resultContainer.visibility = View.VISIBLE
                 btnClear.visibility = View.VISIBLE
-                btnCopy.visibility = View.VISIBLE
+                btnCopyOcr.visibility = View.VISIBLE
+                btnCopySummary.visibility = View.VISIBLE
                 layoutQuizCount.visibility = View.GONE
                 layoutQuizTime.visibility = View.GONE
 
@@ -465,7 +505,8 @@ class OCRActivity : AppCompatActivity() {
                 labelResult.visibility = View.GONE
                 resultContainer.visibility = View.GONE
                 btnClear.visibility = View.VISIBLE
-                btnCopy.visibility = View.VISIBLE
+                btnCopyOcr.visibility = View.VISIBLE
+                btnCopySummary.visibility = View.VISIBLE
                 layoutQuizCount.visibility = View.GONE
                 layoutQuizTime.visibility = View.GONE
             }
@@ -477,7 +518,8 @@ class OCRActivity : AppCompatActivity() {
                 labelResult.visibility = View.GONE
                 resultContainer.visibility = View.GONE
                 btnClear.visibility = View.VISIBLE
-                btnCopy.visibility = View.VISIBLE
+                btnCopyOcr.visibility = View.VISIBLE
+                btnCopySummary.visibility = View.VISIBLE
                 layoutQuizCount.visibility = View.VISIBLE
                 layoutQuizTime.visibility = View.VISIBLE
             }
@@ -501,6 +543,7 @@ class OCRActivity : AppCompatActivity() {
                 progressBar.visibility = View.GONE
             }
     }
+
 
     private fun summarizeText(text: String) {
         val length = spinnerLength.selectedItem.toString().lowercase()
@@ -549,6 +592,31 @@ class OCRActivity : AppCompatActivity() {
                             "Summary generated successfully",
                             Toast.LENGTH_SHORT
                         ).show()
+
+                        val currentUser = FirebaseAuth.getInstance().currentUser
+                        if (currentUser == null) {
+                            Toast.makeText(this@OCRActivity, "Please log in to save history.", Toast.LENGTH_SHORT).show()
+                            return
+                        }
+                        val uid = currentUser.uid
+
+                        val history = StudyHistory(
+                            uid = currentUser.uid,
+                            type = "summary",
+                            inputText = text,
+                            resultText = summary,
+                            timestamp = System.currentTimeMillis()
+                        )
+
+                        Firebase.firestore.collection("study_history")
+                            .add(history)
+                            .addOnSuccessListener {
+                                Log.d("SaveHistory", "Summary saved to Firestore")
+                            }
+                            .addOnFailureListener {
+                                Log.e("SaveHistory", "Failed to save summary", it)
+                            }
+
                     } else {
                         txtSummary.text = "No summary returned."
                         Toast.makeText(
@@ -646,9 +714,55 @@ class OCRActivity : AppCompatActivity() {
                             "Flashcards generated successfully!",
                             Toast.LENGTH_SHORT
                         ).show()
-                        val intent = Intent(this@OCRActivity, FlashcardViewerActivity::class.java)
-                        intent.putExtra("flashcards", ArrayList(flashcards))
-                        startActivity(intent)
+
+                        // Convert flashcards to plain text
+                        val flashcardText = flashcards.joinToString("\n\n") { "Q: ${it.question}\nA: ${it.answer}" }
+
+
+                        val uid = FirebaseAuth.getInstance().currentUser?.uid
+                        if (uid == null) {
+                            Toast.makeText(
+                                this@OCRActivity,
+                                "User not logged in.",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            return
+                        }
+
+                        val history = StudyHistory(
+                            uid = uid ,
+                            type = "flashcards",
+                            inputText = text,
+                            resultText = flashcardText,
+                            timestamp = System.currentTimeMillis()
+                        )
+
+// Save to Firestore
+                        Firebase.firestore.collection("study_history")
+                            .add(history)
+                            .addOnSuccessListener {
+                                Log.d("SaveHistory", "Flashcards saved to Firestore")
+
+                                // Proceed to open viewer
+                                val intent = Intent(this@OCRActivity, FlashcardViewerActivity::class.java)
+                                intent.putExtra("flashcards", ArrayList(flashcards))
+                                startActivity(intent)
+                            }
+                            .addOnFailureListener {
+                                Log.e("SaveHistory", "Failed to save flashcards", it)
+                                Toast.makeText(
+                                    this@OCRActivity,
+                                    "Flashcards generated but failed to save history.",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+
+                                // Still proceed to viewer
+                                val intent = Intent(this@OCRActivity, FlashcardViewerActivity::class.java)
+                                intent.putExtra("flashcards", ArrayList(flashcards))
+                                startActivity(intent)
+                            }
+
+
                     } else {
                         Log.w(
                             "FlashcardDebug",
@@ -766,10 +880,6 @@ class OCRActivity : AppCompatActivity() {
 
 
 
-
-                        val intent = Intent(this@OCRActivity, QuizViewerActivity::class.java)
-                        intent.putParcelableArrayListExtra("quizQuestions", ArrayList(questions))
-
                         val selectedTime = spinnerTimePerQuestion.selectedItem.toString()
                         val timeValue = when {
                             selectedTime.contains("Easy") -> "easy"
@@ -778,8 +888,60 @@ class OCRActivity : AppCompatActivity() {
                             else -> "medium"
                         }
 
-                        intent.putExtra("timePerQuestion", timeValue)
-                        startActivity(intent)
+                        // Convert questions to plain text for history logging
+                        val quizText = questions.joinToString("\n\n") {
+                            val opts = it.options
+                            """
+                            Q: ${it.question}
+                            A. ${opts.getOrNull(0) ?: ""}
+                            B. ${opts.getOrNull(1) ?: ""}
+                            C. ${opts.getOrNull(2) ?: ""}
+                            D. ${opts.getOrNull(3) ?: ""}
+                            Answer: ${it.answer}
+                            """.trimIndent()
+                        }
+
+                        val user = FirebaseAuth.getInstance().currentUser
+                        if (user == null) {
+                            Toast.makeText(this@OCRActivity, "Please log in to generate a quiz.", Toast.LENGTH_LONG).show()
+                            return
+                        }
+
+// Create a study history object
+                        val history = StudyHistory(
+                            uid = user.uid,
+                            type = "quiz",
+                            inputText = text,
+                            resultText = quizText,
+                            timestamp = System.currentTimeMillis()
+                        )
+
+// Save to Firestore
+                        Firebase.firestore.collection("study_history")
+                            .add(history)
+                            .addOnSuccessListener {
+                                Log.d("SaveHistory", "Quiz saved to Firestore")
+
+                                val intent = Intent(this@OCRActivity, QuizViewerActivity::class.java)
+                                intent.putParcelableArrayListExtra("quizQuestions", ArrayList(questions))
+                                intent.putExtra("timePerQuestion", timeValue)
+                                startActivity(intent)
+                            }
+                            .addOnFailureListener {
+                                Log.e("SaveHistory", "Failed to save quiz", it)
+                                Toast.makeText(
+                                    this@OCRActivity,
+                                    "Quiz generated but failed to save history.",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+
+                                val intent = Intent(this@OCRActivity, QuizViewerActivity::class.java)
+                                intent.putParcelableArrayListExtra("quizQuestions", ArrayList(questions))
+                                intent.putExtra("timePerQuestion", timeValue)
+                                startActivity(intent)
+                            }
+
+
                     } else {
                         Toast.makeText(
                             this@OCRActivity,

@@ -57,7 +57,7 @@ class RegisterActivity : AppCompatActivity() {
                     val user = auth.currentUser
                     Toast.makeText(this, "Registered: ${user?.email}", Toast.LENGTH_SHORT).show()
                     // Redirect to Dashboard
-                    startActivity(Intent(this, DashboardActivity::class.java))
+                    startActivity(Intent(this, OCRActivity::class.java))
                     finish()
                 } else {
                     Toast.makeText(this, "Registration failed: ${task.exception?.message}", Toast.LENGTH_SHORT).show()

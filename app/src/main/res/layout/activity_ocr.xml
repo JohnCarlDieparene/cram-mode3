@@ -330,13 +330,23 @@
                 android:textColor="#333333" />
         </ScrollView>
 
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnHistory"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="📜 View History"
+            android:layout_marginBottom="16dp"
+            />
+
+
         <!-- 🧹 Clear / 📋 Copy -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:layout_marginBottom="32dp"
-            android:weightSum="2">
+            android:weightSum="3">
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnClear"
@@ -347,14 +357,24 @@
                 android:text="🗑️ Clear" />
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnCopy"
+                android:id="@+id/btnCopyOcr"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:layout_marginStart="8dp"
-                android:text="📋 Copy" />
+                android:text="📋 Copy OCR" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnCopySummary"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="8dp"
+                android:text="📋 Copy Summary" />
         </LinearLayout>
+
 
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

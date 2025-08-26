@@ -4,7 +4,13 @@
         <item>Flashcard</item>
         <item>Quiz</item>
     </string-array>
-    <string name="default_web_client_id">849531769547-cg9mrpc30qi6uvq522rdbnm875o8og03.apps.googleusercontent.com</string>
+
+    <string name="default_web_client_id">
+  849531769547-7jqkgl6h6jg5ln35s664u805ks48nf3b.apps.googleusercontent.com
+</string>
+
+
+
     <string-array name="language_options">
         <item>English</item>
         <item>Filipino</item>

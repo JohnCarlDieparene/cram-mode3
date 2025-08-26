@@ -27,7 +27,7 @@
         <activity android:name=".ReviewActivity" />
         <activity android:name=".FlashcardActivity" />
         <activity android:name=".QuizActivity" />
-        <activity android:name=".LoginActivity" />
+        <activity android:name=".OCRActivity" />
         <activity android:name=".RegisterActivity" />
         <activity android:name=".CreateActivity" />
         <activity android:name=".Flashcards" />
@@ -39,6 +39,7 @@
         <activity android:name=".FlashcardViewerActivity" />
         <activity android:name=".QuizViewerActivity" />
         <activity android:name=".FullscreenImageActivity" />
+        <activity android:name=".HistoryActivity"/>
 
         <activity android:name="com.canhub.cropper.CropImageActivity"
             android:theme="@style/Base.Theme.AppCompat" />
@@ -46,7 +47,7 @@
 
         <!-- Launcher Activity -->
         <activity
-            android:name=".OCRActivity"
+            android:name=".LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
