@@ -20,24 +20,20 @@ import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import com.labactivity.crammode.utils.FlashcardUtils
-import com.labactivity.crammode.QuizUtils
-import okhttp3.OkHttpClient
 import retrofit2.*
-import retrofit2.converter.gson.GsonConverterFactory
-import java.util.concurrent.TimeUnit
 import androidx.activity.result.ActivityResultLauncher
 import android.text.method.ScrollingMovementMethod
 import android.widget.Scroller
 import java.io.File
-import java.io.FileInputStream
 import java.io.FileOutputStream
-import java.io.InputStream
-import com.labactivity.crammode.network.CohereClient
+import com.labactivity.crammode.CohereClient
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.labactivity.crammode.model.StudyHistory
 import com.google.android.material.button.MaterialButton
+import com.labactivity.crammode.utils.QuizUtils
+
 
 
 
@@ -545,6 +541,21 @@ class OCRActivity : AppCompatActivity() {
     }
 
 
+    private var lastRequestTime = 0L
+    private val COOLDOWN_MS = 6000L // 6 seconds cooldown between requests
+
+    private fun canMakeRequest(): Boolean {
+        val now = System.currentTimeMillis()
+        if (now - lastRequestTime < COOLDOWN_MS) {
+            Toast.makeText(this, "Please wait before making another request.", Toast.LENGTH_SHORT)
+                .show()
+            return false
+        }
+        lastRequestTime = now
+        return true
+    }
+
+    // ---------------- SUMMARIZATION ----------------
     private fun summarizeText(text: String) {
         val length = spinnerLength.selectedItem.toString().lowercase()
         val format = spinnerFormat.selectedItem.toString().lowercase()
@@ -552,414 +563,243 @@ class OCRActivity : AppCompatActivity() {
         progressBar.visibility = View.VISIBLE
         btnSummarize.isEnabled = false
 
-        val prompt = if (selectedLanguage == "Filipino") {
+        val systemPrompt = if (selectedLanguage == "Filipino") {
             """
-    Ikaw ay isang AI study assistant. Buodin ang sumusunod na teksto sa wikang Filipino bilang paghahanda para sa pagsusulit. 
-    Gamitin ang malinaw, maikli, at estrukturadong anyo ng buod. Iwasan ang mga hindi kinakailangang detalye. 
-    Ituon lamang sa mga mahahalagang konsepto.
-
-    Teksto:
-    $text
-    """.trimIndent()
+        Ikaw ay isang AI study assistant. Buodin ang ibinigay na teksto sa malinaw at maikling paraan.
+        Haba: $length
+        Format: $format
+        """.trimIndent()
         } else {
             """
-    You are an AI study assistant helping students prepare for exams. Summarize the following academic text into a clear, structured, and efficient study guide. 
-    Focus only on the most important concepts. Remove fluff, simplify ideas, and make it easy to review.
-
-    Text:
-    $text
-    """.trimIndent()
+        You are an AI study assistant. Summarize the given text clearly and concisely.
+        Length: $length
+        Format: $format
+        """.trimIndent()
         }
 
+        val userPrompt = if (selectedLanguage == "Filipino") {
+            "Buodin ang tekstong ito:\n\n$text"
+        } else {
+            "Summarize this text:\n\n$text"
+        }
 
-        val service = CohereClient.service
-        val request = CohereRequest(prompt, length, format, "command-r-plus")
+        val request = ChatRequest(
+            messages = listOf(
+                ChatMessage("system", listOf(MessageContent(text = systemPrompt))),
+                ChatMessage("user", listOf(MessageContent(text = userPrompt)))
+            )
+        )
 
-        service.summarize("Bearer ${BuildConfig.COHERE_API_KEY}", request)
-            .enqueue(object : Callback<CohereResponse> {
-                override fun onResponse(
-                    call: Call<CohereResponse>,
-                    response: Response<CohereResponse>
-                ) {
-                    progressBar.visibility = View.GONE
-                    btnSummarize.isEnabled = true
+        sendChatRequest(request) { reply ->
+            val summary = if (!reply.isNullOrBlank()) reply else "No summary generated."
+            txtSummary.text = summary
 
-                    val summary = response.body()?.summary
-                    if (!summary.isNullOrBlank()) {
-                        txtSummary.text = summary
-                        Toast.makeText(
-                            this@OCRActivity,
-                            "Summary generated successfully",
-                            Toast.LENGTH_SHORT
-                        ).show()
-
-                        val currentUser = FirebaseAuth.getInstance().currentUser
-                        if (currentUser == null) {
-                            Toast.makeText(this@OCRActivity, "Please log in to save history.", Toast.LENGTH_SHORT).show()
-                            return
-                        }
-                        val uid = currentUser.uid
-
-                        val history = StudyHistory(
-                            uid = currentUser.uid,
-                            type = "summary",
-                            inputText = text,
-                            resultText = summary,
-                            timestamp = System.currentTimeMillis()
-                        )
-
-                        Firebase.firestore.collection("study_history")
-                            .add(history)
-                            .addOnSuccessListener {
-                                Log.d("SaveHistory", "Summary saved to Firestore")
-                            }
-                            .addOnFailureListener {
-                                Log.e("SaveHistory", "Failed to save summary", it)
-                            }
-
-                    } else {
-                        txtSummary.text = "No summary returned."
-                        Toast.makeText(
-                            this@OCRActivity,
-                            "Empty summary received",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                }
-
-                override fun onFailure(call: Call<CohereResponse>, t: Throwable) {
-                    progressBar.visibility = View.GONE
-                    btnSummarize.isEnabled = true
-                    txtSummary.text = "API call failed: ${t.message}"
-                    Toast.makeText(
-                        this@OCRActivity,
-                        "Failed to generate summary: ${t.message}",
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
-            })
+            val user = FirebaseAuth.getInstance().currentUser
+            if (user != null) {
+                val history = StudyHistory(
+                    uid = user.uid,
+                    type = "summary",
+                    inputText = text,
+                    resultText = summary,
+                    timestamp = System.currentTimeMillis()
+                )
+                Firebase.firestore.collection("study_history")
+                    .add(history)
+                    .addOnSuccessListener { Log.d("SaveHistory", "Summary saved") }
+                    .addOnFailureListener { Log.e("SaveHistory", "Failed to save summary", it) }
+            }
+        }
     }
 
 
+    // ---------------- FLASHCARDS ----------------
     private fun generateFlashcards(text: String) {
+        val count = spinnerFlashcardCount.selectedItem.toString().toInt()
+        val shortenedText = text.take(3000)
+
         progressBar.visibility = View.VISIBLE
         btnSummarize.isEnabled = false
 
-        val count = spinnerFlashcardCount.selectedItem.toString().toInt()
-
-        val shortenedText = if (text.length > 3000) text.substring(0, 3000) else text
-
-        Toast.makeText(this, "Generating $count flashcards...", Toast.LENGTH_SHORT).show()
-
-        val startTime = System.currentTimeMillis()
-        Log.d("FlashcardDebug", "Original text length: ${text.length}")
-        Log.d("FlashcardDebug", "Shortened text length: ${shortenedText.length}")
-
-        val prompt = if (selectedLanguage == "Filipino") {
-            """
-    Ikaw ay isang AI tutor na tumutulong sa mabilisang paghahanda sa pagsusulit. 
-    Gumawa ng eksaktong $count flashcards mula sa sumusunod na akademikong teksto. 
-    Ang bawat flashcard ay nasa format ng Tanong at Sagot. Ituon sa mga pangunahing konsepto, depinisyon, at impormasyon na mahalaga sa pagsusulit.
-
-    Format:
-    Q: Ano ang X?
-    A: Ito ay Y.
-
-    Ilabas lamang ang $count Q&A flashcards sa itaas na format. Iwasan ang dagdag na paliwanag o iba pang teksto.
-
-    Teksto:
-    $shortenedText
-    """.trimIndent()
+        val systemPrompt = if (selectedLanguage == "Filipino") {
+            "Ikaw ay isang AI tutor na lumilikha ng flashcards sa anyong Tanong at Sagot."
         } else {
-            """
-    You are an AI tutor helping students prepare for exams in limited time. 
-    Create exactly $count flashcards from the following academic text. 
-    Each flashcard must follow a clear Q&A format focused on definitions, key facts, and core ideas. 
-    Keep each flashcard concise and useful for fast review.
-
-    Format:
-    Q: What is X?
-    A: It is Y.
-
-    Only output exactly $count Q&A flashcards in this format. No explanations or extra text.
-
-    Text:
-    $shortenedText
-    """.trimIndent()
+            "You are an AI tutor generating study flashcards in Q&A format."
         }
 
+        val userPrompt = if (selectedLanguage == "Filipino") {
+            """
+        Gumawa ng eksaktong $count flashcards mula sa sumusunod na teksto.
 
-        Log.d("FlashcardDebug", "Prompt length: ${prompt.length}")
+        ⚠️ Format strictly (walang numbering o bullet points):
+        Q: [Isulat ang tanong dito]
+        A: [Isulat ang sagot dito]
 
-        val service = CohereClient.service
-        val request = FlashcardRequest(prompt = prompt)
+        Teksto:
+        $shortenedText
+        """.trimIndent()
+        } else {
+            """
+        Create exactly $count flashcards from the following text.
 
-        service.generateFlashcards("Bearer ${BuildConfig.COHERE_API_KEY}", request)
-            .enqueue(object : Callback<FlashcardResponse> {
-                override fun onResponse(
-                    call: Call<FlashcardResponse>,
-                    response: Response<FlashcardResponse>
-                ) {
-                    progressBar.visibility = View.GONE
-                    btnSummarize.isEnabled = true
+        ⚠️ Format strictly (no numbering, no bullet points, no extra explanations):
+        Q: [Write the question here]
+        A: [Write the answer here]
 
-                    val raw = response.body()?.generations?.firstOrNull()?.text?.trim() ?: ""
-                    Log.d("FlashcardRawOutput", raw)
+        Text:
+        $shortenedText
+        """.trimIndent()
+        }
 
-                    val flashcards = FlashcardUtils.parseFlashcards(raw).shuffled()
+        val request = ChatRequest(
+            model = "command-a-03-2025",
+            messages = listOf(
+                ChatMessage("system", listOf(MessageContent(text = systemPrompt))),
+                ChatMessage("user", listOf(MessageContent(text = userPrompt)))
+            )
+        )
 
-                    if (flashcards.size == count) {
-                        Toast.makeText(
-                            this@OCRActivity,
-                            "Flashcards generated successfully!",
-                            Toast.LENGTH_SHORT
-                        ).show()
-
-                        // Convert flashcards to plain text
-                        val flashcardText = flashcards.joinToString("\n\n") { "Q: ${it.question}\nA: ${it.answer}" }
-
-
-                        val uid = FirebaseAuth.getInstance().currentUser?.uid
-                        if (uid == null) {
-                            Toast.makeText(
-                                this@OCRActivity,
-                                "User not logged in.",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                            return
-                        }
-
-                        val history = StudyHistory(
-                            uid = uid ,
-                            type = "flashcards",
-                            inputText = text,
-                            resultText = flashcardText,
-                            timestamp = System.currentTimeMillis()
-                        )
-
-// Save to Firestore
-                        Firebase.firestore.collection("study_history")
-                            .add(history)
-                            .addOnSuccessListener {
-                                Log.d("SaveHistory", "Flashcards saved to Firestore")
-
-                                // Proceed to open viewer
-                                val intent = Intent(this@OCRActivity, FlashcardViewerActivity::class.java)
-                                intent.putExtra("flashcards", ArrayList(flashcards))
-                                startActivity(intent)
-                            }
-                            .addOnFailureListener {
-                                Log.e("SaveHistory", "Failed to save flashcards", it)
-                                Toast.makeText(
-                                    this@OCRActivity,
-                                    "Flashcards generated but failed to save history.",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-
-                                // Still proceed to viewer
-                                val intent = Intent(this@OCRActivity, FlashcardViewerActivity::class.java)
-                                intent.putExtra("flashcards", ArrayList(flashcards))
-                                startActivity(intent)
-                            }
-
-
-                    } else {
-                        Log.w(
-                            "FlashcardDebug",
-                            "Expected $count flashcards, but got ${flashcards.size}"
-                        )
-                        Toast.makeText(
-                            this@OCRActivity,
-                            "Parsed ${flashcards.size}/$count flashcards. Try again or improve input.",
-                            Toast.LENGTH_LONG
-                        ).show()
-                        txtSummary.text = raw // Show raw for debugging
-                    }
+        sendChatRequest(request) { reply ->
+            val flashcards = FlashcardUtils.parseFlashcards(reply).shuffled()
+            if (flashcards.isNotEmpty()) {
+                // Save to Firestore
+                val flashcardText = flashcards.joinToString("\n\n") { "Q: ${it.question}\nA: ${it.answer}" }
+                val user = FirebaseAuth.getInstance().currentUser
+                if (user != null) {
+                    val history = StudyHistory(
+                        uid = user.uid,
+                        type = "flashcards",
+                        inputText = text,
+                        resultText = flashcardText,
+                        timestamp = System.currentTimeMillis()
+                    )
+                    Firebase.firestore.collection("study_history")
+                        .add(history)
+                        .addOnSuccessListener { Log.d("SaveHistory", "Flashcards saved") }
+                        .addOnFailureListener { Log.e("SaveHistory", "Failed to save flashcards", it) }
                 }
 
-                override fun onFailure(call: Call<FlashcardResponse>, t: Throwable) {
-                    progressBar.visibility = View.GONE
-                    btnSummarize.isEnabled = true
-                    Toast.makeText(
-                        this@OCRActivity,
-                        "Flashcard generation failed: ${t.message}",
-                        Toast.LENGTH_LONG
-                    ).show()
-                    Log.e("FlashcardError", "API call failed", t)
+                // Open viewer
+                val intent = Intent(this, FlashcardViewerActivity::class.java)
+                intent.putExtra("flashcards", ArrayList(flashcards))
+                startActivity(intent)
+            } else {
+                txtSummary.text = reply
+                Toast.makeText(this, "No flashcards generated.", Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+
+    // ---------------- QUIZ ----------------
+    private fun generateQuiz(text: String) {
+        val count = spinnerQuizCount.selectedItem.toString().toInt()
+        val shortenedText = text.take(3000)
+
+        progressBar.visibility = View.VISIBLE
+        btnSummarize.isEnabled = false
+
+        val systemPrompt = if (selectedLanguage == "Filipino") {
+            """
+        Ikaw ay isang AI quiz generator. Gumawa ng eksaktong $count multiple-choice na tanong mula sa ibinigay na teksto.
+        Gamitin ang eksaktong format na ito:
+        
+        Tanong: <question text>
+        A. <choice1>
+        B. <choice2>
+        C. <choice3>
+        D. <choice4>
+        Sagot: <tamang letra A-D>
+        """.trimIndent()
+        } else {
+            """
+        You are an AI quiz generator. Generate exactly $count multiple-choice questions from the given text.
+        Use this exact format:
+        
+        Question: <question text>
+        A. <choice1>
+        B. <choice2>
+        C. <choice3>
+        D. <choice4>
+        Answer: <correct letter A-D>
+        """.trimIndent()
+        }
+
+        val userPrompt = if (selectedLanguage == "Filipino") {
+            "Gumawa ng $count tanong mula sa tekstong ito:\n\n$shortenedText\n\nSundin ang format."
+        } else {
+            "Generate $count questions from this text:\n\n$shortenedText\n\nFollow the format exactly."
+        }
+
+        val request = ChatRequest(
+            messages = listOf(
+                ChatMessage("system", listOf(MessageContent(text = systemPrompt))),
+                ChatMessage("user", listOf(MessageContent(text = userPrompt)))
+            )
+        )
+
+        sendChatRequest(request) { reply ->
+            val questions = QuizUtils.parseQuizQuestions(reply) // ✅ returns List<QuizQuestion>
+            if (questions.isNotEmpty()) {
+                val user = FirebaseAuth.getInstance().currentUser
+                if (user != null) {
+                    val history = StudyHistory(
+                        uid = user.uid,
+                        type = "quiz",
+                        inputText = text,
+                        resultText = reply, // keep raw text if you want
+                        timestamp = System.currentTimeMillis(),
+                        quiz = questions // ✅ save parsed quiz with correctAnswer + empty userAnswer
+                    )
+
+                    Firebase.firestore.collection("study_history")
+                        .add(history)
+                        .addOnSuccessListener { Log.d("SaveHistory", "Quiz saved with full data") }
+                        .addOnFailureListener { Log.e("SaveHistory", "Failed to save quiz", it) }
+
+                    // ✅ Start viewer in "take quiz" mode
+                    val intent = Intent(this, QuizViewerActivity::class.java)
+                    intent.putParcelableArrayListExtra("quizQuestions", ArrayList(questions))
+                    intent.putExtra("timestamp", history.timestamp)
+                    intent.putExtra("readOnly", false)
+                    startActivity(intent)
                 }
-            })
+            } else {
+                txtSummary.text = reply
+                Toast.makeText(this, "No quiz questions generated.", Toast.LENGTH_LONG).show()
+            }
+        }
     }
 
 
-    private fun generateQuiz(text: String) {
-        progressBar.visibility = View.VISIBLE
-        btnSummarize.isEnabled = false
 
-        val count = spinnerQuizCount.selectedItem.toString().toInt()
-        Toast.makeText(this, "Generating $count quiz questions...", Toast.LENGTH_SHORT).show()
-
-        val shortenedText = if (text.length > 3000) text.substring(0, 3000) else text
-
-        val startTime = System.currentTimeMillis()
-        Log.d("FlashcardDebug", "Original text length: ${text.length}")
-        Log.d("FlashcardDebug", "Shortened text length: ${shortenedText.length}")
-
-        Log.d("QuizDebug", "Selected language: $selectedLanguage")
-
-
-        val prompt = if (selectedLanguage == "Filipino") {
-            """
-    Ikaw ay isang AI quiz generator para sa mga estudyanteng nag-aaral para sa pagsusulit. 
-    Gumawa ng $count multiple-choice na tanong batay sa sumusunod na akademikong teksto. 
-    Ituon ang mga tanong sa pag-unawa ng mahahalagang konsepto, hindi lamang pag-alala ng detalye.
-
-    Format:
-    Tanong: ...
-    A. ...
-    B. ...
-    C. ...
-    D. ...
-    Sagot: X
-
-    Teksto:
-    $shortenedText
-    """.trimIndent()
-        } else {
-            """
-    You are an AI quiz generator for students preparing for exams. Based on the following academic material, create $count multiple-choice questions. 
-    Focus the questions on testing understanding of key concepts and facts — ideal for last-minute review.
-
-    Format:
-    Question: ...
-    A. ...
-    B. ...
-    C. ...
-    D. ...
-    Answer: X
-
-    Text:
-    $shortenedText
-    """.trimIndent()
-        }
-
-
-        Log.d("FlashcardDebug", "Prompt length: ${prompt.length}")
-
-        val service = CohereClient.service
-        val request = QuizRequest(prompt = prompt)
-
-        service.generateQuiz("Bearer ${BuildConfig.COHERE_API_KEY}", request)
-            .enqueue(object : Callback<QuizResponse> {
-                override fun onResponse(
-                    call: Call<QuizResponse>,
-                    response: Response<QuizResponse>
-                ) {
+    // ---------------- COMMON FUNCTION ----------------
+    private fun sendChatRequest(request: ChatRequest, onResult: (String) -> Unit) {
+        CohereClient.api.chat("Bearer ${BuildConfig.COHERE_API_KEY}", request)
+            .enqueue(object : Callback<ChatResponse> {
+                override fun onResponse(call: Call<ChatResponse>, response: Response<ChatResponse>) {
                     progressBar.visibility = View.GONE
                     btnSummarize.isEnabled = true
 
-                    if (!response.isSuccessful) {
-                        Toast.makeText(
-                            this@OCRActivity,
-                            "API error: ${response.code()}",
-                            Toast.LENGTH_LONG
-                        ).show()
-                        txtSummary.text = "Error: ${response.message()}"
-                        return
-                    }
+                    if (response.isSuccessful) {
+                        val reply = response.body()
+                            ?.message
+                            ?.content
+                            ?.joinToString("\n") { it.text.trim() }
+                            ?.takeIf { it.isNotBlank() }
+                            ?: ""
 
-                    val raw = response.body()?.generations?.firstOrNull()?.text ?: ""
-                    val questions = QuizUtils.parseQuizQuestions(raw).shuffled()
-
-                    if (questions.isNotEmpty()) {
-                        Toast.makeText(
-                            this@OCRActivity,
-                            "Quiz generated successfully!",
-                            Toast.LENGTH_SHORT
-
-                        ).show()
-
-
-
-                        val selectedTime = spinnerTimePerQuestion.selectedItem.toString()
-                        val timeValue = when {
-                            selectedTime.contains("Easy") -> "easy"
-                            selectedTime.contains("Medium") -> "medium"
-                            selectedTime.contains("Hard") -> "hard"
-                            else -> "medium"
-                        }
-
-                        // Convert questions to plain text for history logging
-                        val quizText = questions.joinToString("\n\n") {
-                            val opts = it.options
-                            """
-                            Q: ${it.question}
-                            A. ${opts.getOrNull(0) ?: ""}
-                            B. ${opts.getOrNull(1) ?: ""}
-                            C. ${opts.getOrNull(2) ?: ""}
-                            D. ${opts.getOrNull(3) ?: ""}
-                            Answer: ${it.answer}
-                            """.trimIndent()
-                        }
-
-                        val user = FirebaseAuth.getInstance().currentUser
-                        if (user == null) {
-                            Toast.makeText(this@OCRActivity, "Please log in to generate a quiz.", Toast.LENGTH_LONG).show()
-                            return
-                        }
-
-// Create a study history object
-                        val history = StudyHistory(
-                            uid = user.uid,
-                            type = "quiz",
-                            inputText = text,
-                            resultText = quizText,
-                            timestamp = System.currentTimeMillis()
-                        )
-
-// Save to Firestore
-                        Firebase.firestore.collection("study_history")
-                            .add(history)
-                            .addOnSuccessListener {
-                                Log.d("SaveHistory", "Quiz saved to Firestore")
-
-                                val intent = Intent(this@OCRActivity, QuizViewerActivity::class.java)
-                                intent.putParcelableArrayListExtra("quizQuestions", ArrayList(questions))
-                                intent.putExtra("timePerQuestion", timeValue)
-                                startActivity(intent)
-                            }
-                            .addOnFailureListener {
-                                Log.e("SaveHistory", "Failed to save quiz", it)
-                                Toast.makeText(
-                                    this@OCRActivity,
-                                    "Quiz generated but failed to save history.",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-
-                                val intent = Intent(this@OCRActivity, QuizViewerActivity::class.java)
-                                intent.putParcelableArrayListExtra("quizQuestions", ArrayList(questions))
-                                intent.putExtra("timePerQuestion", timeValue)
-                                startActivity(intent)
-                            }
-
-
+                        onResult(reply)
                     } else {
-                        Toast.makeText(
-                            this@OCRActivity,
-                            "Failed to parse quiz questions.",
-                            Toast.LENGTH_LONG
-                        ).show()
-                        txtSummary.text = "No quiz questions generated."
+                        val error = response.errorBody()?.string()
+                        Log.e("CohereDebug", "Error ${response.code()} $error")
+                        Toast.makeText(this@OCRActivity, "API Error ${response.code()}", Toast.LENGTH_SHORT).show()
                     }
                 }
 
-                override fun onFailure(call: Call<QuizResponse>, t: Throwable) {
+                override fun onFailure(call: Call<ChatResponse>, t: Throwable) {
                     progressBar.visibility = View.GONE
                     btnSummarize.isEnabled = true
-                    Toast.makeText(
-                        this@OCRActivity,
-                        "Quiz generation failed: ${t.message}",
-                        Toast.LENGTH_LONG
-                    ).show()
+                    Log.e("CohereDebug", "API call failed", t)
+                    Toast.makeText(this@OCRActivity, "API call failed: ${t.message}", Toast.LENGTH_SHORT).show()
                 }
             })
     }

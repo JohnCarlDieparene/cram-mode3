@@ -1,38 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/quizScrollView"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="24dp"
-    android:background="@color/white">
+    android:padding="16dp"
+    android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:gravity="center_horizontal">
+        android:orientation="vertical">
 
-        <!-- Score -->
-        <TextView
-            android:id="@+id/txtScore"
-            android:layout_width="wrap_content"
+        <!-- Score + Timer Row -->
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Score: 0"
-            android:textStyle="bold"
-            android:textColor="@android:color/holo_green_dark"
-            android:textSize="16sp"
-            android:layout_marginBottom="8dp" />
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
 
-        <!-- Timer -->
-        <TextView
-            android:id="@+id/txtTimer"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Time left: 10s"
-            android:textColor="@android:color/holo_red_dark"
-            android:textStyle="bold"
-            android:textSize="16sp"
-            android:layout_marginBottom="8dp" />
+            <TextView
+                android:id="@+id/txtScore"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="Score: 0"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/txtTimer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Time left: 15s"
+                android:textSize="16sp"
+                android:textColor="@android:color/holo_red_dark" />
+        </LinearLayout>
 
         <!-- Progress Bar -->
         <ProgressBar
@@ -40,90 +42,111 @@
             style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="match_parent"
             android:layout_height="8dp"
-            android:progress="0"
             android:max="100"
-            android:layout_marginBottom="16dp"
-            android:progressTint="@color/purple_500" />
+            android:progress="0"
+            android:layout_marginTop="8dp"
+            android:progressTint="@android:color/holo_blue_dark" />
 
-        <!-- Question -->
-        <TextView
-            android:id="@+id/txtQuestion"
+        <!-- Question Card -->
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Question will appear here"
-            android:textSize="20sp"
-            android:textColor="@color/black"
-            android:textStyle="bold"
-            android:layout_marginBottom="24dp" />
+            android:layout_marginTop="16dp"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="4dp"
+            android:padding="16dp">
 
-        <!-- Choices -->
-        <RadioGroup
-            android:id="@+id/radioGroup"
+            <TextView
+                android:id="@+id/txtQuestion"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Question goes here"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+        </androidx.cardview.widget.CardView>
+
+        <!-- Choices Card -->
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_marginTop="16dp"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="4dp"
+            android:padding="16dp">
 
-            <RadioButton
-                android:id="@+id/optionA"
-                style="@style/Widget.MaterialComponents.CompoundButton.RadioButton"
+            <RadioGroup
+                android:id="@+id/radioGroup"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="A"
-                android:layout_marginBottom="8dp" />
+                android:orientation="vertical">
 
-            <RadioButton
-                android:id="@+id/optionB"
-                style="@style/Widget.MaterialComponents.CompoundButton.RadioButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="B"
-                android:layout_marginBottom="8dp" />
+                <RadioButton
+                    android:id="@+id/optionA"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:buttonTint="@android:color/holo_blue_dark"
+                    android:text="Option A" />
 
-            <RadioButton
-                android:id="@+id/optionC"
-                style="@style/Widget.MaterialComponents.CompoundButton.RadioButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="C"
-                android:layout_marginBottom="8dp" />
+                <RadioButton
+                    android:id="@+id/optionB"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:buttonTint="@android:color/holo_blue_dark"
+                    android:text="Option B" />
 
-            <RadioButton
-                android:id="@+id/optionD"
-                style="@style/Widget.MaterialComponents.CompoundButton.RadioButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="D"
-                android:layout_marginBottom="16dp" />
-        </RadioGroup>
+                <RadioButton
+                    android:id="@+id/optionC"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:buttonTint="@android:color/holo_blue_dark"
+                    android:text="Option C" />
+
+                <RadioButton
+                    android:id="@+id/optionD"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:buttonTint="@android:color/holo_blue_dark"
+                    android:text="Option D" />
+            </RadioGroup>
+        </androidx.cardview.widget.CardView>
 
         <!-- Feedback -->
         <TextView
             android:id="@+id/txtFeedback"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text=""
             android:textSize="16sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="16dp" />
+            android:textStyle="italic"
+            android:layout_marginTop="12dp"
+            android:textColor="@android:color/black" />
 
         <!-- Buttons -->
-        <Button
-            android:id="@+id/btnSubmit"
+        <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Submit Answer"
-            android:backgroundTint="@color/teal_700"
-            android:textColor="@android:color/white"
-            android:layout_marginBottom="12dp" />
+            android:gravity="end"
+            android:layout_marginTop="16dp">
 
-        <Button
-            android:id="@+id/btnNext"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Next Question"
-            android:backgroundTint="@color/purple_500"
-            android:textColor="@android:color/white"
-            android:visibility="gone" />
+            <Button
+                android:id="@+id/btnSubmit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Submit"
+                android:backgroundTint="@android:color/holo_blue_dark"
+                android:textColor="@android:color/white" />
+
+            <Button
+                android:id="@+id/btnNext"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Next"
+                android:backgroundTint="@android:color/holo_green_dark"
+                android:textColor="@android:color/white"
+                android:layout_marginStart="12dp"
+                android:visibility="gone" />
+        </LinearLayout>
 
     </LinearLayout>
 </ScrollView>

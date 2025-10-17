@@ -3,37 +3,20 @@
     android:orientation="vertical"
     android:padding="16dp"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#FAFAFA">
+    android:layout_height="match_parent">
 
-
-    <ProgressBar
-        android:id="@+id/progressBar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:visibility="gone"/>
-
-    <!-- 🧠 Empty Message -->
     <TextView
         android:id="@+id/txtEmptyMessage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="No saved history found."
-        android:textAlignment="center"
-        android:textColor="@android:color/darker_gray"
+        android:text="Loading history..."
+        android:gravity="center"
         android:textSize="16sp"
-        android:padding="24dp"
-        android:visibility="gone" />
+        android:visibility="gone"
+        android:layout_marginTop="20dp"/>
 
-    <!-- 📄 RecyclerView -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerHistory"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:layout_marginTop="8dp"
-        android:clipToPadding="false"
-        android:paddingBottom="8dp" />
-
+        android:layout_height="match_parent"/>
 </LinearLayout>

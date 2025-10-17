@@ -1,30 +1,29 @@
-package com.labactivity.crammode.network
+// --- CohereClient.kt ---
+package com.labactivity.crammode
 
-import com.labactivity.crammode.CohereApi
 import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
 object CohereClient {
 
-    private val logging = HttpLoggingInterceptor().apply {
-        level = HttpLoggingInterceptor.Level.BODY
-    }
+    private const val BASE_URL = "https://api.cohere.com/"
 
-    private val client = OkHttpClient.Builder()
-        .addInterceptor(logging)
-        .connectTimeout(30, TimeUnit.SECONDS)
+    // Configure OkHttp with timeouts (optional but recommended for AI APIs)
+    private val okHttpClient = OkHttpClient.Builder()
+        .connectTimeout(60, TimeUnit.SECONDS)
         .readTimeout(60, TimeUnit.SECONDS)
         .writeTimeout(60, TimeUnit.SECONDS)
         .build()
 
+    // Retrofit instance
     private val retrofit: Retrofit = Retrofit.Builder()
-        .baseUrl("https://api.cohere.ai/v1/")
-        .client(client)
+        .baseUrl(BASE_URL)
+        .client(okHttpClient)
         .addConverterFactory(GsonConverterFactory.create())
         .build()
 
-    val service: CohereApi = retrofit.create(CohereApi::class.java)
+    // Expose CohereApi
+    val api: CohereApi = retrofit.create(CohereApi::class.java)
 }

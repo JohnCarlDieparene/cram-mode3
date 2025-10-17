@@ -1,0 +1,11 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24"
+    android:tint="@color/flashcardColor">
+
+    <path
+        android:fillColor="@android:color/black"
+        android:pathData="M20.41,11.41l-8.5,8.5c-0.39,0.39 -1.02,0.39 -1.41,0l-8.5,-8.5c-0.39,-0.39 -0.39,-1.02 0,-1.41l8.5,-8.5c0.39,-0.39 1.02,-0.39 1.41,0l8.5,8.5c0.39,0.39 0.39,1.02 0,1.41z"/>
+</vector>

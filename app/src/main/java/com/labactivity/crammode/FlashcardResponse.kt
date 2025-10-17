@@ -1,9 +1,9 @@
 package com.labactivity.crammode
 
 data class FlashcardResponse(
-    val generations: List<Generation>
+    val generations: List<FlashcardGeneration>
 )
 
-data class Generation(
+data class FlashcardGeneration(
     val text: String
 )

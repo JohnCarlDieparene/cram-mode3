@@ -5,7 +5,9 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class QuizQuestion(
-    val question: String,
-    val options: List<String>,
-    val answer: String
+    val question: String = "",
+    val options: List<String> = emptyList(),
+    val correctAnswer: String = "",
+    var userAnswer: String? = null
 ) : Parcelable
+

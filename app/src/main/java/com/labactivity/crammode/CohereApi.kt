@@ -1,3 +1,4 @@
+// --- CohereApi.kt ---
 package com.labactivity.crammode
 
 import retrofit2.Call
@@ -8,13 +9,15 @@ import retrofit2.http.POST
 
 interface CohereApi {
 
+    // ✅ v2 Chat endpoint
     @Headers("Content-Type: application/json")
-    @POST("summarize")
-    fun summarize(
-        @Header("Authorization") auth: String,
-        @Body request: CohereRequest
-    ): Call<CohereResponse>
+    @POST("v2/chat")
+    fun chat(
+        @Header("Authorization") auth: String,   // "Bearer YOUR_API_KEY"
+        @Body request: ChatRequest
+    ): Call<ChatResponse>
 
+    // ✅ v1 Generate endpoint for Flashcards
     @Headers("Content-Type: application/json")
     @POST("generate")
     fun generateFlashcards(
@@ -22,6 +25,7 @@ interface CohereApi {
         @Body request: FlashcardRequest
     ): Call<FlashcardResponse>
 
+    // ✅ v1 Generate endpoint for Quiz
     @Headers("Content-Type: application/json")
     @POST("generate")
     fun generateQuiz(

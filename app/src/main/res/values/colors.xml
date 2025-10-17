@@ -6,6 +6,9 @@
     <color name="teal_700">#FF018786</color>
     <color name="purple_500">#6200EE</color>
     <color name="purple_700">#3700B3</color>
+    <color name="summaryColor">#2196F3</color> <!-- Blue -->
+    <color name="flashcardColor">#4CAF50</color> <!-- Green -->
+    <color name="quizColor">#FF9800</color> <!-- Orange -->
 
 
 </resources>
