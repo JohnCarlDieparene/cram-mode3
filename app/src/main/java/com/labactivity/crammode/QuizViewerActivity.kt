@@ -27,6 +27,9 @@ class QuizViewerActivity : AppCompatActivity() {
     private lateinit var btnSubmit: Button
     private lateinit var btnNext: Button
 
+    private lateinit var btnPrevious: Button
+
+
     private var quizList: MutableList<QuizQuestion> = mutableListOf()
     private var currentIndex = 0
     private var score = 0
@@ -56,6 +59,7 @@ class QuizViewerActivity : AppCompatActivity() {
 
         btnSubmit = findViewById(R.id.btnSubmit)
         btnNext = findViewById(R.id.btnNext)
+        btnPrevious = findViewById(R.id.btnPrevious)
 
         // --- Get intent data ---
         intent.getParcelableArrayListExtra<QuizQuestion>("quizQuestions")?.let {
@@ -113,6 +117,15 @@ class QuizViewerActivity : AppCompatActivity() {
                 builder.show()
             }
         }
+
+        btnPrevious.setOnClickListener {
+            if (currentIndex > 0) {
+                currentIndex--
+                updateProgress()
+                showQuestion()
+            }
+        }
+
     }
 
     // --- Progress update ---
@@ -175,6 +188,8 @@ class QuizViewerActivity : AppCompatActivity() {
 
             btnNext.visibility = if (currentIndex < quizList.size - 1) View.VISIBLE else View.GONE
             answered = true
+            btnPrevious.visibility = if (currentIndex > 0) View.VISIBLE else View.GONE
+
         } else {
             // --- Interactive mode (taking quiz) ---
             setOptionsEnabled(true)
@@ -225,6 +240,7 @@ class QuizViewerActivity : AppCompatActivity() {
         txtFeedback.text = "⏰ Time's up! Correct answer: ${currentQuestion.correctAnswer}"
         txtFeedback.setTextColor(Color.RED)
         setOptionsEnabled(false)
+        btnSubmit.visibility = View.GONE
         btnNext.visibility = View.VISIBLE
         answered = true
         updateProgress()
